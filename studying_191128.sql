@@ -1,0 +1,40 @@
+--<지원자 정보 테이블>
+CREATE TABLE INFORM(
+NUM NUMBER PRIMARY KEY, --지원자 번호(일련번호)
+NAME VARCHAR2(20)NOT NULL, --이름
+BIRTH DATE, --생년월일
+PHONE VARCHAR2(20), --전화번호
+ADDRESS VARCHAR(200), --주소
+EXAM NUMBER(3) DEFAULT 0, --시험점수(100점 만점 점수), 입력 안하면 0점
+INTERVIEW NUMBER(3,1) DEFAULT 0, --면접점수(10점 만점 실수), 입력 안하면 0점
+PASS CHAR(1) --합격여부(합/불 중의 하나로 O, X)
+);
+
+
+--<데이터 저장>
+INSERT INTO INFORM VALUES(1, '홍길동', '95-12-25', '010-1111-1111','광주 광산구 111', 100, 5.5,'O');
+INSERT INTO INFORM VALUES(2, '김길동', '97-5-25', '010-2222-2222','광주 서구', 80, 4.5, 'X');
+INSERT INTO INFORM VALUES(3, '박길동', '00-9-8', '010-3333-3333', '부산 해운대', 45, 3.5, 'X');
+INSERT INTO INFORM VALUES(4, '오바마', '95-11-2', '010-4444-4444', '미국 워싱턴', 65, 9.8, 'O');
+INSERT INTO INFORM(NUM, NAME, EXAM, INTERVIEW, PASS) VALUES (5, '트럼프', 99, 10.0, 'O');
+INSERT INTO INFORM(NUM, NAME, ADDRESS)VALUES(6, '아베', '일본');
+INSERT INTO INFORM(NUM, NAME, ADDRESS)VALUES(7, '푸틴', '러시아');
+
+
+--<조건 검색>
+--성이 '홍'씨인 사람
+SELECT * FROM INFORM WHERE NAME = '홍%';
+--이름이 '길동'인 사람
+SELECT * FROM INFORM WHERE NAME = '%길동';
+--시험점수가 50 ~ 70점
+SELECT * FROM INFROM WHERE EXAM BETWEEN 50 AND 70;
+--생년월일이 '95/11/2'인 사람
+SELECT * FROM INFORM WHERE BIRTH = '95/11/2';
+--합격자 중에서 시험 점수가 60점 이하인 사람
+SELECT * FROM INFORM WHERE PASS = 'O' AND EXAM <= 60;
+--합격여부가 NULL인 사람
+SELECT * FROM INFORM WHERE PASS IS NULL;
+--'김'씨 중에서 광주 거주
+SELECT * FROM INFORM WHERE NAME LIKE '김%' AND ADDRESS LIKE '%광주%';
+--합격자들의 이름과 점수를 출력 (점수는 10점 만점으로 환산해서 출력)
+SELECT NAME, (EXAM / 10)SCORE FROM INFORM WHERE PASS = 'O';

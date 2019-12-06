@@ -1,0 +1,191 @@
+--19/12/6 두번째 시간
+--HR 계정
+
+--EMPLOYEES 테이블 전체
+SELECT 
+    * 
+FROM 
+    EMPLOYEES;
+--이름과 성을 포함해서 대소문자 구별없이 'DA'가 포함된 사람
+SELECT 
+    * 
+FROM 
+    EMPLOYEES 
+WHERE 
+    UPPER(FIRST_NAME || LAST_NAME) LIKE '%DA'; --문자열 연결시 ||를 사용
+--급여가 5000~10000인 사람
+SELECT 
+    *
+FROM
+    EMPLOYEES 
+WHERE SALARY BETWEEN 5000 AND 10000
+;
+--입사년도가 2005년인 사람
+SELECT 
+    * 
+FROM 
+    EMPLOYEES 
+WHERE TO_CHAR(HIRE_DATE, 'YYYY') = '2005'
+;
+--커미션 비율이 NULL인 사람
+SELECT 
+    * 
+FROM 
+    EMPLOYEES 
+WHERE 
+    COMMISSION_PCT IS NULL;
+--전화번호 앞 3자리만 출력
+SELECT 
+    EMPLOYEE_ID
+    , FIRST_NAME
+    , LAST_NAME
+    , SUBSTR(PHONE_NUMBER,0,3) "전화번호 앞 3자리" 
+FROM 
+    EMPLOYEES
+;
+--이름과 총 급여 출력
+SELECT 
+    EMPLOYEE_ID
+    , (FIRST_NAME || ' ' || LAST_NAME) "이름"
+    ,(SALARY +(SALARY * NVL(COMMISSION_PCT,0))) "총 급여"  
+FROM 
+    EMPLOYEES
+;
+
+--<JOIN>
+--사원이름과 부서번호,부서명,부서번호순으로 출력
+SELECT 
+    E.FIRST_NAME
+    , E.LAST_NAME
+    , D.DEPARTMENT_NAME
+    , D.DEPARTMENT_ID
+FROM 
+    EMPLOYEES E, DEPARTMENTS D
+WHERE 
+    E.DEPARTMENT_ID = D.DEPARTMENT_ID
+ORDER BY 
+    E.DEPARTMENT_ID
+;
+
+--사원이름/부서번호/부서명/도시명/국가명  -->4개의 테이블을 쓰니까 조건은 3개를 쓴다.
+SELECT 
+    E.FIRST_NAME
+    ,E.LAST_NAME 
+    ,D.DEPARTMENT_ID
+    ,D.DEPARTMENT_NAME
+    ,L.CITY
+    ,C.COUNTRY_NAME
+FROM
+    EMPLOYEES E
+    , DEPARTMENTS D
+    , LOCATIONS L
+    , COUNTRIES C
+WHERE 
+    E.DEPARTMENT_ID = D.DEPARTMENT_ID
+    AND D.LOCATION_ID = L.LOCATION_ID
+    AND L.COUNTRY_ID = C.COUNTRY_ID
+;
+
+--SALES 부서의 사원 수
+SELECT 
+    COUNT(*) "SALES 부서의 사원수" 
+FROM 
+    EMPLOYEES E
+    , DEPARTMENTS D 
+WHERE 
+    E.DEPARTMENT_ID = D.DEPARTMENT_ID 
+    AND D.DEPARTMENT_NAME LIKE 'Sales'
+;
+--90번 부서의 급여 평균
+SELECT 
+    AVG(SALARY)
+FROM 
+    EMPLOYEES 
+WHERE 
+    DEPARTMENT_ID = 90;
+
+--부서명/사원수/평균급여
+SELECT 
+    D.DEPARTMENT_NAME "부서명"
+    , COUNT(*) "사원수" 
+    , ROUND(AVG(E.SALARY)) "평균급여"
+FROM 
+    EMPLOYEES E
+    , DEPARTMENTS D 
+WHERE 
+    E.DEPARTMENT_ID = D.DEPARTMENT_ID
+GROUP BY 
+    D.DEPARTMENT_NAME
+ORDER BY 
+    D.DEPARTMENT_NAME
+ ;
+
+--도시별 사원수
+SELECT 
+    L.CITY
+    ,COUNT(*) "도시별 사원 수"
+FROM
+    EMPLOYEES E
+    , DEPARTMENTS D
+    , LOCATIONS L
+WHERE
+    E.DEPARTMENT_ID = D.DEPARTMENT_ID
+    AND D.LOCATION_ID = L.LOCATION_ID
+GROUP BY
+    L.CITY
+ORDER BY
+    L.CITY
+;
+
+--국가별 사원수
+SELECT 
+    C.COUNTRY_NAME
+    ,COUNT(*) "국가별 사원수"
+    
+FROM 
+    EMPLOYEES E
+    ,DEPARTMENTS D
+    ,LOCATIONS L
+    ,COUNTRIES C
+WHERE
+    E.DEPARTMENT_ID = D.DEPARTMENT_ID
+    AND D.LOCATION_ID = L.LOCATION_ID
+    AND L.COUNTRY_ID = C.COUNTRY_ID
+GROUP BY
+    C.COUNTRY_NAME
+ORDER BY
+    C.COUNTRY_NAME
+;
+    
+--사원번호, 이름, 매니저 번호
+SELECT EMPLOYEE_ID, LAST_NAME, MANAGER_ID FROM EMPLOYEES;
+
+--사원번호, 이름, 매니저번호, 매니저 이름 -> 서로 다른 테이블인척 하는 것
+SELECT 
+    E1.EMPLOYEE_ID
+    , E1.LAST_NAME
+    , E1.MANAGER_ID
+    , E2.LAST_NAME
+FROM 
+    EMPLOYEES E1
+    , EMPLOYEES E2 --별칭을 2개 붙임
+WHERE 
+    E1.MANAGER_ID = E2.EMPLOYEE_ID
+;
+
+--매니저별로 팀원이 몇명인가?
+SELECT
+    E1.MANAGER_ID
+    ,COUNT(*) "매니저별로 팀원 수"
+FROM
+    EMPLOYEES E1
+    , EMPLOYEES E2
+WHERE 
+    E1.MANAGER_ID = E2.EMPLOYEE_ID
+GROUP BY
+    E1.MANAGER_ID
+ORDER BY
+    E1.MANAGER_ID
+;
+    
+
